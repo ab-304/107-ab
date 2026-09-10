@@ -24,6 +24,42 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should filter games by category and publisher', async ({ page }) => {
+    await page.goto('/');
+
+    const categoryFilter = page.getByTestId('category-filter-1');
+    const publisherFilter = page.getByTestId('publisher-filter');
+    await expect(categoryFilter).toBeVisible();
+    await expect(publisherFilter).toBeVisible();
+
+    await test.step('Apply a category filter', async () => {
+      await categoryFilter.check();
+      await page.getByTestId('apply-filters').click();
+      await expect(page).toHaveURL(/category=1/);
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+      await expect(categoryFilter).toBeChecked();
+    });
+
+    await test.step('Combine category and publisher filters', async () => {
+      await publisherFilter.selectOption({ index: 1 });
+      await page.getByTestId('apply-filters').click();
+      await expect(page).toHaveURL(/category=1.*publisher=/);
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+      await expect(publisherFilter).not.toHaveValue('');
+    });
+  });
+
+  test('should clear game filters and show an empty filtered state', async ({ page }) => {
+    await page.goto('/?category=99999');
+    await expect(page.getByTestId('empty-state-text')).toHaveText(
+      'No games match the selected filters.',
+    );
+
+    await page.getByTestId('clear-filters').click();
+    await expect(page).toHaveURL('/');
+    await expect(page.getByTestId('games-grid')).toBeVisible();
+  });
+
   test('should navigate to correct game details page when clicking on a game', async ({ page }) => {
     let gameId: string | null;
     let gameTitle: string | null;

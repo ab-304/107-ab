@@ -1,4 +1,8 @@
 ---
+/**
+ * Provides the shared document shell, global styles, and persisted visual
+ * preferences for every prerendered page.
+ */
 import Header from "../components/Header.astro"
 import "../styles/global.css"
 
@@ -21,6 +25,12 @@ const { title = "Tailspin Toys" } = Astro.props;
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <script is:inline>
+            document.documentElement.classList.toggle(
+                'high-contrast',
+                localStorage.getItem('tailspin-high-contrast') === 'true',
+            );
+        </script>
     </head>
     <body class="min-h-screen bg-slate-900 text-white transition-colors duration-300 m-0 w-full h-full font-sans">
         <Header />
@@ -40,6 +50,52 @@ const { title = "Tailspin Toys" } = Astro.props;
     html {
         font-family: var(--font-sans);
         scroll-behavior: smooth;
+    }
+
+    html.high-contrast {
+        color-scheme: dark;
+    }
+
+    html.high-contrast body {
+        background: #000 !important;
+        color: #fff !important;
+    }
+
+    html.high-contrast header,
+    html.high-contrast [class*='bg-slate-'],
+    html.high-contrast [class*='bg-blue-'],
+    html.high-contrast [class*='bg-purple-'] {
+        background: #000 !important;
+        color: #fff !important;
+    }
+
+    html.high-contrast [class*='text-slate-'],
+    html.high-contrast [class*='text-blue-'],
+    html.high-contrast [class*='text-purple-'] {
+        color: #fff !important;
+    }
+
+    html.high-contrast a {
+        color: #00ffff !important;
+        text-decoration: underline;
+    }
+
+    html.high-contrast button,
+    html.high-contrast select,
+    html.high-contrast input {
+        background: #000 !important;
+        border-color: #fff !important;
+        color: #fff !important;
+    }
+
+    html.high-contrast [class*='border-'] {
+        border-color: #fff !important;
+    }
+
+    html.high-contrast :focus-visible {
+        outline: 3px solid #ffff00 !important;
+        outline-offset: 3px;
+        box-shadow: none !important;
     }
     
     body {
